@@ -358,6 +358,20 @@ public class ExcelUtil {
                 if (row.getRowNum() == 0) {
                     continue;
                 }
+                // 整行都空，就跳过
+                boolean allRowIsNull = true;
+                Iterator<Cell> cellIterator = row.cellIterator();
+                while (cellIterator.hasNext()) {
+                    Object cellValue = getCellValue(cellIterator.next());
+                    if (cellValue != null) {
+                        allRowIsNull = false;
+                        break;
+                    }
+                }
+                if (allRowIsNull) {
+                    System.out.println("Excel row " + row.getRowNum() + " all row value is null!");
+                    continue;
+                }
                 T t = clazz.newInstance();
                 int arrayIndex = 0;// 标识当前第几个数组了
                 int cellIndex = 0;// 标识当前读到这一行的第几个cell了
