@@ -1,38 +1,24 @@
 package org.sageras.util.ExcelUtil;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+public class AppTest {
+    public static void main(String[] args) throws IOException {
+        
+        String[] headers = {"a","b","c"};
+        Collection<Object> dataset=new ArrayList<Object>();
+        dataset.add(new Model("a1", "b1", "c1"));
+        dataset.add(new Model("a2", "b2", "c2"));
+        dataset.add(new Model("a3", "b3", "c3"));
+        File f=new File("/Users/SagerasWang/Desktop/test.xls");
+        OutputStream out =new FileOutputStream(f);
+        
+        ExcelUtil.exportExcel(headers, dataset, out);
+        out.close();
     }
 }
