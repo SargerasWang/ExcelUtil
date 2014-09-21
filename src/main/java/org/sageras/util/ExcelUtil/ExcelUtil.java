@@ -32,6 +32,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>ExcelUtil</code> 与 {@link ExcelCell}搭配使用
@@ -40,6 +42,8 @@ import org.apache.poi.ss.util.CellReference;
  * @version 1.0, Created at 2013年9月14日
  */
 public class ExcelUtil {
+  
+    private static Logger LG=LoggerFactory.getLogger(ExcelUtil.class);
 
     /**
      * 用来验证excel与Vo中的类型是否一致 <br>
@@ -124,8 +128,8 @@ public class ExcelUtil {
     }
 
     /**
-     * 这是一个通用的方法，利用了JAVA的反射机制，可以将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
-     * 用于单个个sheet
+     * 利用JAVA的反射机制，将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
+     * 用于单个sheet
      * 
      * @param <T>
      * 
@@ -142,8 +146,8 @@ public class ExcelUtil {
     }
 
     /**
-     * 这是一个通用的方法，利用了JAVA的反射机制，可以将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
-     * 用于单个个sheet
+     * 利用JAVA的反射机制，将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
+     * 用于单个sheet
      * 
      * @param <T>
      * 
@@ -168,8 +172,7 @@ public class ExcelUtil {
         try {
             workbook.write(out);
         } catch (IOException e) {
-
-            e.printStackTrace();
+            LG.error(e.toString(),e);
         }
     }
 
@@ -213,7 +216,7 @@ public class ExcelUtil {
         try {
             workbook.write(out);
         } catch (IOException e) {
-            e.printStackTrace();
+            LG.error(e.toString(),e);
         }
     }
 
@@ -315,7 +318,7 @@ public class ExcelUtil {
                     cellNum++;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LG.error(e.toString(),e);
             }
         }
         // 设定自动宽度
@@ -346,7 +349,7 @@ public class ExcelUtil {
         try {
             workBook = new HSSFWorkbook(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            LG.error(e.toString(),e);
         }
         List<T> list = new ArrayList<T>();
         HSSFSheet sheet = workBook.getSheetAt(0);
@@ -369,7 +372,7 @@ public class ExcelUtil {
                     }
                 }
                 if (allRowIsNull) {
-                    System.out.println("Excel row " + row.getRowNum() + " all row value is null!");
+                    LG.warn("Excel row " + row.getRowNum() + " all row value is null!");
                     continue;
                 }
                 T t = clazz.newInstance();

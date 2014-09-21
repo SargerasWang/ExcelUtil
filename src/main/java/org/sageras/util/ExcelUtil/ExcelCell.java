@@ -64,7 +64,8 @@ public @interface ExcelCell {
          */
         public double gt() default Double.NaN;
 
-/**Apply a "less than" constraint to the named property , equivalent "<"
+        /**
+         * Apply a "less than" constraint to the named property , equivalent "<"
          * @return
          */
         public double lt() default Double.NaN;
