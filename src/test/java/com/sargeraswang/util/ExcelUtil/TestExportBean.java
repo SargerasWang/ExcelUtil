@@ -9,7 +9,7 @@ import java.util.Collection;
 
 import com.sargeraswang.util.ExcelUtil.ExcelUtil;
 
-public class AppTest {
+public class TestExportBean {
     public static void main(String[] args) throws IOException {
         
         String[] headers = {"a","b","c"};
