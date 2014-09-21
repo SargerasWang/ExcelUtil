@@ -1,4 +1,4 @@
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,8 +11,8 @@ import org.apache.commons.lang3.StringUtils;
  * The <code>ExcelCell</code><br>
  * 数值型的栏位只能使用Double
  * 
- * @see {@link org.sageras.util.ExcelUtil.ExcelUtil#exportExcel}
- * @author sageeras.wang
+ * @see {@link com.sargeraswang.util.ExcelUtil.ExcelUtil#exportExcel}
+ * @author sargeras.wang
  * @version 1.0, Created at 2013年9月14日
  * @version 1.1, Updated at 2013年10月20日 ,添加了专用于验证的子注解:Valid
  */

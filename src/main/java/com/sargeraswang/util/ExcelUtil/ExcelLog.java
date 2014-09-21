@@ -1,9 +1,9 @@
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
 
 /**
  * The <code>ExcelLog</code>
  * 
- * @author sageeras.wang
+ * @author sargeras.wang
  * @version 1.0, Created at 2013年9月17日
  */
 public class ExcelLog {

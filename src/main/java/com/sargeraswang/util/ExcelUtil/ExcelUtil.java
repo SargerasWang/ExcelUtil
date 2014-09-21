@@ -1,4 +1,4 @@
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The <code>ExcelUtil</code> 与 {@link ExcelCell}搭配使用
  * 
- * @author sageeras.wang
+ * @author sargeras.wang
  * @version 1.0, Created at 2013年9月14日
  */
 public class ExcelUtil {
@@ -177,7 +177,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 这是一个通用的方法，利用了JAVA的反射机制，可以将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
+     * 利用JAVA的反射机制，将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
      * 用于多个sheet
      * 
      * @param <T>
@@ -191,7 +191,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 这是一个通用的方法，利用了JAVA的反射机制，可以将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
+     * 利用JAVA的反射机制，将放置在JAVA集合中并且符号一定条件的数据以EXCEL 的形式输出到指定IO设备上<br>
      * 用于多个sheet
      * 
      * @param <T>

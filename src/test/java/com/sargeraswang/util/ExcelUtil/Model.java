@@ -1,7 +1,9 @@
 /**
  * @author SargerasWang
  */
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
+
+import com.sargeraswang.util.ExcelUtil.ExcelCell;
 
 /**
  * The <code>Model</code>

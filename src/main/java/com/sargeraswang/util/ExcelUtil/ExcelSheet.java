@@ -1,11 +1,11 @@
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
 
 import java.util.Collection;
 
 /**
  * 用于汇出多个sheet的Vo The <code>ExcelSheet</code>
  * 
- * @author sageeras.wang
+ * @author sargeras.wang
  * @version 1.0, Created at 2013年10月25日
  */
 public class ExcelSheet<T> {

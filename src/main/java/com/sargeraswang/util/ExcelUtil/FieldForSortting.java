@@ -1,11 +1,11 @@
-package org.sageras.util.ExcelUtil;
+package com.sargeraswang.util.ExcelUtil;
 
 import java.lang.reflect.Field;
 
 /**
  * The <code>FieldForSortting</code>
  * 
- * @author sageeras.wang
+ * @author sargeras.wang
  * @version 1.0, Created at 2013年9月17日
  */
 public class FieldForSortting {
