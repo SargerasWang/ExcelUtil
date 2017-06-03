@@ -123,7 +123,7 @@ public class ExcelUtil {
      *                javabean属性的数据类型有基本数据类型及String,Date,String[],Double[]
      * @param out     与输出设备关联的流对象，可以将EXCEL文档导出到本地文件或者网络中
      */
-    public static <T> void exportExcel(String[] headers, Collection<T> dataset, OutputStream out) {
+    public static <T> void exportExcel(Map<String,String> headers, Collection<T> dataset, OutputStream out) {
         exportExcel(headers, dataset, out, null);
     }
 
@@ -138,7 +138,7 @@ public class ExcelUtil {
      * @param out     与输出设备关联的流对象，可以将EXCEL文档导出到本地文件或者网络中
      * @param pattern 如果有时间数据，设定输出格式。默认为"yyy-MM-dd"
      */
-    public static <T> void exportExcel(String[] headers, Collection<T> dataset, OutputStream out,
+    public static <T> void exportExcel(Map<String,String> headers, Collection<T> dataset, OutputStream out,
                                        String pattern) {
         // 声明一个工作薄
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -233,15 +233,33 @@ public class ExcelUtil {
      * @param dataset 数据集合
      * @param pattern 日期格式
      */
-    private static <T> void write2Sheet(HSSFSheet sheet, String[] headers, Collection<T> dataset,
+    private static <T> void write2Sheet(HSSFSheet sheet, Map<String,String> headers, Collection<T> dataset,
                                         String pattern) {
+        //时间格式默认"yyyy-MM-dd"
+        if (StringUtils.isEmpty(pattern)){
+            pattern = "yyyy-MM-dd";
+        }
         // 产生表格标题行
         HSSFRow row = sheet.createRow(0);
-        for (int i = 0; i < headers.length; i++) {
-            HSSFCell cell = row.createCell(i);
-            HSSFRichTextString text = new HSSFRichTextString(headers[i]);
-            cell.setCellValue(text);
+        //todo:标题行转中文
+        Set<String> keys = headers.keySet();
+        Iterator<String> it1 = keys.iterator();
+        String key = "";    //存放临时键变量
+        int c= 0;   //标题列数
+        while (it1.hasNext()){
+            key = it1.next();
+            if (headers.containsKey(key)) {
+                HSSFCell cell = row.createCell(c);
+                HSSFRichTextString text = new HSSFRichTextString(headers.get(key));
+                cell.setCellValue(text);
+                c++;
+            }
         }
+//        for (int i = 0; i < headers.length; i++) {
+//            HSSFCell cell = row.createCell(i);
+//            HSSFRichTextString text = new HSSFRichTextString(headers[i]);
+//            cell.setCellValue(text);
+//        }
 
         // 遍历集合数据，产生数据行
         Iterator<T> it = dataset.iterator();
@@ -255,16 +273,84 @@ public class ExcelUtil {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> map = (Map<String, Object>) t;
                     int cellNum = 0;
-                    for (String k : headers) {
-                        if (map.containsKey(k) == false) {
-                            LG.error("Map 中 不存在 key [" + k + "]");
+                    //todo:遍历列名
+                    Iterator<String> it2 = keys.iterator();
+                    while (it2.hasNext()){
+                        key = it2.next();
+                        if (!headers.containsKey(key)) {
+                            LG.error("Map 中 不存在 key [" + key + "]");
                             continue;
                         }
-                        Object value = map.get(k);
+                        Object value = map.get(key);
                         HSSFCell cell = row.createCell(cellNum);
-                        cell.setCellValue(String.valueOf(value));
+//                        cell.setCellValue(String.valueOf(value));
+                        String textValue = null;
+                        if (value instanceof Integer) {
+                            int intValue = (Integer) value;
+                            cell.setCellValue(intValue);
+                        } else if (value instanceof Float) {
+                            float fValue = (Float) value;
+                            cell.setCellValue(fValue);
+                        } else if (value instanceof Double) {
+                            double dValue = (Double) value;
+                            cell.setCellValue(dValue);
+                        } else if (value instanceof Long) {
+                            long longValue = (Long) value;
+                            cell.setCellValue(longValue);
+                        } else if (value instanceof Boolean) {
+                            boolean bValue = (Boolean) value;
+                            cell.setCellValue(bValue);
+                        } else if (value instanceof Date) {
+                            Date date = (Date) value;
+                            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+                            textValue = sdf.format(date);
+                        } else if (value instanceof String[]) {
+                            String[] strArr = (String[]) value;
+                            for (int j = 0; j < strArr.length; j++) {
+                                String str = strArr[j];
+                                cell.setCellValue(str);
+                                if (j != strArr.length - 1) {
+                                    cellNum++;
+                                    cell = row.createCell(cellNum);
+                                }
+                            }
+                        } else if (value instanceof Double[]) {
+                            Double[] douArr = (Double[]) value;
+                            for (int j = 0; j < douArr.length; j++) {
+                                Double val = douArr[j];
+                                // 值不为空则set Value
+                                if (val != null) {
+                                    cell.setCellValue(val);
+                                }
+
+                                if (j != douArr.length - 1) {
+                                    cellNum++;
+                                    cell = row.createCell(cellNum);
+                                }
+                            }
+                        } else {
+                            // 其它数据类型都当作字符串简单处理
+                            String empty = StringUtils.EMPTY;
+                            textValue = value == null ? empty : value.toString();
+                        }
+                        if (textValue != null) {
+                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
+                            cell.setCellValue(richString);
+                        }
+
+
                         cellNum++;
                     }
+//                    for (String k : headers) {
+//                        if (map.containsKey(k) == false) {
+//                            LG.error("Map 中 不存在 key [" + k + "]");
+//                            continue;
+//                        }
+//                        Object value = map.get(k);
+//                        HSSFCell cell = row.createCell(cellNum);
+//                        cell.setCellValue(String.valueOf(value));
+//                        cellNum++;
+//                    }
                 } else {
                     List<FieldForSortting> fields = sortFieldByAnno(t.getClass());
                     int cellNum = 0;
@@ -307,7 +393,7 @@ public class ExcelUtil {
                             Double[] douArr = (Double[]) value;
                             for (int j = 0; j < douArr.length; j++) {
                                 Double val = douArr[j];
-                                // 资料不为空则set Value
+                                // 值不为空则set Value
                                 if (val != null) {
                                     cell.setCellValue(val);
                                 }
@@ -339,7 +425,7 @@ public class ExcelUtil {
             }
         }
         // 设定自动宽度
-        for (int i = 0; i < headers.length; i++) {
+        for (int i = 0; i < headers.size(); i++) {
             sheet.autoSizeColumn(i);
         }
     }
