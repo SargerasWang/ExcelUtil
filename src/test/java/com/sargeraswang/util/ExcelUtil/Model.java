@@ -3,7 +3,7 @@
  */
 package com.sargeraswang.util.ExcelUtil;
 
-import com.sargeraswang.util.ExcelUtil.ExcelCell;
+import java.util.Date;
 
 /**
  * The <code>Model</code>
@@ -17,11 +17,22 @@ public class Model {
     private String b;
     @ExcelCell(index = 2)
     private String c;
+    @ExcelCell(index = 3)
+    private Date d;
 
-    public Model(String a, String b, String c) {
+    public Date getD() {
+        return d;
+    }
+
+    public void setD(Date d) {
+        this.d = d;
+    }
+
+    public Model(String a, String b, String c,Date d) {
         this.a = a;
         this.b = b;
         this.c = c;
+        this.d = d;
     }
 
     /**
