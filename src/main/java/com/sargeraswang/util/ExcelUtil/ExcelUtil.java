@@ -255,11 +255,6 @@ public class ExcelUtil {
                 c++;
             }
         }
-//        for (int i = 0; i < headers.length; i++) {
-//            HSSFCell cell = row.createCell(i);
-//            HSSFRichTextString text = new HSSFRichTextString(headers[i]);
-//            cell.setCellValue(text);
-//        }
 
         // 遍历集合数据，产生数据行
         Iterator<T> it = dataset.iterator();
@@ -341,16 +336,6 @@ public class ExcelUtil {
 
                         cellNum++;
                     }
-//                    for (String k : headers) {
-//                        if (map.containsKey(k) == false) {
-//                            LG.error("Map 中 不存在 key [" + k + "]");
-//                            continue;
-//                        }
-//                        Object value = map.get(k);
-//                        HSSFCell cell = row.createCell(cellNum);
-//                        cell.setCellValue(String.valueOf(value));
-//                        cellNum++;
-//                    }
                 } else {
                     List<FieldForSortting> fields = sortFieldByAnno(t.getClass());
                     int cellNum = 0;
