@@ -8,6 +8,7 @@ import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.slf4j.Logger;
@@ -36,50 +37,48 @@ public class ExcelUtil {
      * 用来验证excel与Vo中的类型是否一致 <br>
      * Map<栏位类型,只能是哪些Cell类型>
      */
-    private static Map<Class<?>, Integer[]> validateMap = new HashMap<Class<?>, Integer[]>();
+    private static Map<Class<?>, CellType[]> validateMap = new HashMap<>();
 
     static {
-        validateMap.put(String[].class, new Integer[]{Cell.CELL_TYPE_STRING});
-        validateMap.put(Double[].class, new Integer[]{Cell.CELL_TYPE_NUMERIC});
-        validateMap.put(String.class, new Integer[]{Cell.CELL_TYPE_STRING});
-        validateMap.put(Double.class, new Integer[]{Cell.CELL_TYPE_NUMERIC});
-        validateMap.put(Date.class, new Integer[]{Cell.CELL_TYPE_NUMERIC, Cell.CELL_TYPE_STRING});
-        validateMap.put(Integer.class, new Integer[]{Cell.CELL_TYPE_NUMERIC});
-        validateMap.put(Float.class, new Integer[]{Cell.CELL_TYPE_NUMERIC});
-        validateMap.put(Long.class, new Integer[]{Cell.CELL_TYPE_NUMERIC});
-        validateMap.put(Boolean.class, new Integer[]{Cell.CELL_TYPE_BOOLEAN});
+        validateMap.put(String[].class, new CellType[]{CellType.STRING});
+        validateMap.put(Double[].class, new CellType[]{CellType.NUMERIC});
+        validateMap.put(String.class, new CellType[]{CellType.STRING});
+        validateMap.put(Double.class, new CellType[]{CellType.NUMERIC});
+        validateMap.put(Date.class, new CellType[]{CellType.NUMERIC, CellType.STRING});
+        validateMap.put(Integer.class, new CellType[]{CellType.NUMERIC});
+        validateMap.put(Float.class, new CellType[]{CellType.NUMERIC});
+        validateMap.put(Long.class, new CellType[]{CellType.NUMERIC});
+        validateMap.put(Boolean.class, new CellType[]{CellType.BOOLEAN});
     }
 
     /**
      * 获取cell类型的文字描述
      *
      * @param cellType <pre>
-     *                 Cell.CELL_TYPE_BLANK
-     *                 Cell.CELL_TYPE_BOOLEAN
-     *                 Cell.CELL_TYPE_ERROR
-     *                 Cell.CELL_TYPE_FORMULA
-     *                 Cell.CELL_TYPE_NUMERIC
-     *                 Cell.CELL_TYPE_STRING
+     *                 CellType.BLANK
+     *                 CellType.BOOLEAN
+     *                 CellType.ERROR
+     *                 CellType.FORMULA
+     *                 CellType.NUMERIC
+     *                 CellType.STRING
      *                 </pre>
      * @return
      */
-    private static String getCellTypeByInt(int cellType) {
-        switch (cellType) {
-            case Cell.CELL_TYPE_BLANK:
-                return "Null type";
-            case Cell.CELL_TYPE_BOOLEAN:
-                return "Boolean type";
-            case Cell.CELL_TYPE_ERROR:
-                return "Error type";
-            case Cell.CELL_TYPE_FORMULA:
-                return "Formula type";
-            case Cell.CELL_TYPE_NUMERIC:
-                return "Numeric type";
-            case Cell.CELL_TYPE_STRING:
-                return "String type";
-            default:
-                return "Unknown type";
-        }
+    private static String getCellTypeByInt(CellType cellType) {
+        if(cellType == CellType.BLANK)
+            return "Null type";
+        else if(cellType == CellType.BOOLEAN)
+            return "Boolean type";
+        else if(cellType == CellType.ERROR)
+            return "Error type";
+        else if(cellType == CellType.FORMULA)
+            return "Formula type";
+        else if(cellType == CellType.NUMERIC)
+            return "Numeric type";
+        else if(cellType == CellType.STRING)
+            return "String type";
+        else
+            return "Unknown type";
     }
 
     /**
@@ -90,27 +89,25 @@ public class ExcelUtil {
      */
     private static Object getCellValue(Cell cell) {
         if (cell == null
-                || (cell.getCellType() == Cell.CELL_TYPE_STRING && StringUtils.isBlank(cell
+                || (cell.getCellTypeEnum() == CellType.STRING && StringUtils.isBlank(cell
                 .getStringCellValue()))) {
             return null;
         }
-        int cellType = cell.getCellType();
-        switch (cellType) {
-            case Cell.CELL_TYPE_BLANK:
+        CellType cellType = cell.getCellTypeEnum();
+            if(cellType == CellType.BLANK)
                 return null;
-            case Cell.CELL_TYPE_BOOLEAN:
+            else if(cellType == CellType.BOOLEAN)
                 return cell.getBooleanCellValue();
-            case Cell.CELL_TYPE_ERROR:
+            else if(cellType == CellType.ERROR)
                 return cell.getErrorCellValue();
-            case Cell.CELL_TYPE_FORMULA:
+            else if(cellType == CellType.FORMULA)
                 return cell.getNumericCellValue();
-            case Cell.CELL_TYPE_NUMERIC:
+            else if(cellType == CellType.NUMERIC)
                 return cell.getNumericCellValue();
-            case Cell.CELL_TYPE_STRING:
+            else if(cellType == CellType.STRING)
                 return cell.getStringCellValue();
-            default:
+            else
                 return null;
-        }
     }
 
     /**
@@ -241,7 +238,7 @@ public class ExcelUtil {
         }
         // 产生表格标题行
         HSSFRow row = sheet.createRow(0);
-        //todo:标题行转中文
+        // 标题行转中文
         Set<String> keys = headers.keySet();
         Iterator<String> it1 = keys.iterator();
         String key = "";    //存放临时键变量
@@ -262,13 +259,13 @@ public class ExcelUtil {
         while (it.hasNext()) {
             index++;
             row = sheet.createRow(index);
-            T t = (T) it.next();
+            T t = it.next();
             try {
                 if (t instanceof Map) {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> map = (Map<String, Object>) t;
                     int cellNum = 0;
-                    //todo:遍历列名
+                    //遍历列名
                     Iterator<String> it2 = keys.iterator();
                     while (it2.hasNext()){
                         key = it2.next();
@@ -278,61 +275,8 @@ public class ExcelUtil {
                         }
                         Object value = map.get(key);
                         HSSFCell cell = row.createCell(cellNum);
-//                        cell.setCellValue(String.valueOf(value));
-                        String textValue = null;
-                        if (value instanceof Integer) {
-                            int intValue = (Integer) value;
-                            cell.setCellValue(intValue);
-                        } else if (value instanceof Float) {
-                            float fValue = (Float) value;
-                            cell.setCellValue(fValue);
-                        } else if (value instanceof Double) {
-                            double dValue = (Double) value;
-                            cell.setCellValue(dValue);
-                        } else if (value instanceof Long) {
-                            long longValue = (Long) value;
-                            cell.setCellValue(longValue);
-                        } else if (value instanceof Boolean) {
-                            boolean bValue = (Boolean) value;
-                            cell.setCellValue(bValue);
-                        } else if (value instanceof Date) {
-                            Date date = (Date) value;
-                            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-                            textValue = sdf.format(date);
-                        } else if (value instanceof String[]) {
-                            String[] strArr = (String[]) value;
-                            for (int j = 0; j < strArr.length; j++) {
-                                String str = strArr[j];
-                                cell.setCellValue(str);
-                                if (j != strArr.length - 1) {
-                                    cellNum++;
-                                    cell = row.createCell(cellNum);
-                                }
-                            }
-                        } else if (value instanceof Double[]) {
-                            Double[] douArr = (Double[]) value;
-                            for (int j = 0; j < douArr.length; j++) {
-                                Double val = douArr[j];
-                                // 值不为空则set Value
-                                if (val != null) {
-                                    cell.setCellValue(val);
-                                }
 
-                                if (j != douArr.length - 1) {
-                                    cellNum++;
-                                    cell = row.createCell(cellNum);
-                                }
-                            }
-                        } else {
-                            // 其它数据类型都当作字符串简单处理
-                            String empty = StringUtils.EMPTY;
-                            textValue = value == null ? empty : value.toString();
-                        }
-                        if (textValue != null) {
-                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
-                            cell.setCellValue(richString);
-                        }
-
+                        cellNum = setCellValue(cell,value,pattern,cellNum,null,row);
 
                         cellNum++;
                     }
@@ -344,63 +288,8 @@ public class ExcelUtil {
                         Field field = fields.get(i).getField();
                         field.setAccessible(true);
                         Object value = field.get(t);
-                        String textValue = null;
-                        if (value instanceof Integer) {
-                            int intValue = (Integer) value;
-                            cell.setCellValue(intValue);
-                        } else if (value instanceof Float) {
-                            float fValue = (Float) value;
-                            cell.setCellValue(fValue);
-                        } else if (value instanceof Double) {
-                            double dValue = (Double) value;
-                            cell.setCellValue(dValue);
-                        } else if (value instanceof Long) {
-                            long longValue = (Long) value;
-                            cell.setCellValue(longValue);
-                        } else if (value instanceof Boolean) {
-                            boolean bValue = (Boolean) value;
-                            cell.setCellValue(bValue);
-                        } else if (value instanceof Date) {
-                            Date date = (Date) value;
-                            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-                            textValue = sdf.format(date);
-                        } else if (value instanceof String[]) {
-                            String[] strArr = (String[]) value;
-                            for (int j = 0; j < strArr.length; j++) {
-                                String str = strArr[j];
-                                cell.setCellValue(str);
-                                if (j != strArr.length - 1) {
-                                    cellNum++;
-                                    cell = row.createCell(cellNum);
-                                }
-                            }
-                        } else if (value instanceof Double[]) {
-                            Double[] douArr = (Double[]) value;
-                            for (int j = 0; j < douArr.length; j++) {
-                                Double val = douArr[j];
-                                // 值不为空则set Value
-                                if (val != null) {
-                                    cell.setCellValue(val);
-                                }
 
-                                if (j != douArr.length - 1) {
-                                    cellNum++;
-                                    cell = row.createCell(cellNum);
-                                }
-                            }
-                        } else {
-                            // 其它数据类型都当作字符串简单处理
-                            String empty = StringUtils.EMPTY;
-                            ExcelCell anno = field.getAnnotation(ExcelCell.class);
-                            if (anno != null) {
-                                empty = anno.defaultValue();
-                            }
-                            textValue = value == null ? empty : value.toString();
-                        }
-                        if (textValue != null) {
-                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
-                            cell.setCellValue(richString);
-                        }
+                        cellNum = setCellValue(cell,value,pattern,cellNum,field,row);
 
                         cellNum++;
                     }
@@ -413,6 +302,69 @@ public class ExcelUtil {
         for (int i = 0; i < headers.size(); i++) {
             sheet.autoSizeColumn(i);
         }
+    }
+
+    private static int setCellValue(HSSFCell cell,Object value,String pattern,int cellNum,Field field,HSSFRow row){
+        String textValue = null;
+        if (value instanceof Integer) {
+            int intValue = (Integer) value;
+            cell.setCellValue(intValue);
+        } else if (value instanceof Float) {
+            float fValue = (Float) value;
+            cell.setCellValue(fValue);
+        } else if (value instanceof Double) {
+            double dValue = (Double) value;
+            cell.setCellValue(dValue);
+        } else if (value instanceof Long) {
+            long longValue = (Long) value;
+            cell.setCellValue(longValue);
+        } else if (value instanceof Boolean) {
+            boolean bValue = (Boolean) value;
+            cell.setCellValue(bValue);
+        } else if (value instanceof Date) {
+            Date date = (Date) value;
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+            textValue = sdf.format(date);
+        } else if (value instanceof String[]) {
+            String[] strArr = (String[]) value;
+            for (int j = 0; j < strArr.length; j++) {
+                String str = strArr[j];
+                cell.setCellValue(str);
+                if (j != strArr.length - 1) {
+                    cellNum++;
+                    cell = row.createCell(cellNum);
+                }
+            }
+        } else if (value instanceof Double[]) {
+            Double[] douArr = (Double[]) value;
+            for (int j = 0; j < douArr.length; j++) {
+                Double val = douArr[j];
+                // 值不为空则set Value
+                if (val != null) {
+                    cell.setCellValue(val);
+                }
+
+                if (j != douArr.length - 1) {
+                    cellNum++;
+                    cell = row.createCell(cellNum);
+                }
+            }
+        } else {
+            // 其它数据类型都当作字符串简单处理
+            String empty = StringUtils.EMPTY;
+            if(field != null) {
+                ExcelCell anno = field.getAnnotation(ExcelCell.class);
+                if (anno != null) {
+                    empty = anno.defaultValue();
+                }
+            }
+            textValue = value == null ? empty : value.toString();
+        }
+        if (textValue != null) {
+            HSSFRichTextString richString = new HSSFRichTextString(textValue);
+            cell.setCellValue(richString);
+        }
+        return cellNum;
     }
 
     /**
@@ -521,7 +473,7 @@ public class ExcelUtil {
                                 Object value = null;
                                 // 处理特殊情况,Excel中的String,转换成Bean的Date
                                 if (field.getType().equals(Date.class)
-                                        && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                                        && cell.getCellTypeEnum() == CellType.STRING) {
                                     Object strDate = getCellValue(cell);
                                     try {
                                         value = new SimpleDateFormat(pattern).parse(strDate.toString());
@@ -576,32 +528,32 @@ public class ExcelUtil {
     private static String validateCell(Cell cell, Field field, int cellNum) {
         String columnName = CellReference.convertNumToColString(cellNum);
         String result = null;
-        Integer[] integers = validateMap.get(field.getType());
-        if (integers == null) {
+        CellType[] cellTypeArr = validateMap.get(field.getType());
+        if (cellTypeArr == null) {
             result = MessageFormat.format("Unsupported type [{0}]", field.getType().getSimpleName());
             return result;
         }
         ExcelCell annoCell = field.getAnnotation(ExcelCell.class);
         if (cell == null
-                || (cell.getCellType() == Cell.CELL_TYPE_STRING && StringUtils.isBlank(cell
+                || (cell.getCellTypeEnum() == CellType.STRING && StringUtils.isBlank(cell
                 .getStringCellValue()))) {
             if (annoCell != null && annoCell.valid().allowNull() == false) {
                 result = MessageFormat.format("the cell [{0}] can not null", columnName);
             }
             ;
-        } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK && annoCell.valid().allowNull()) {
+        } else if (cell.getCellTypeEnum() == CellType.BLANK && annoCell.valid().allowNull()) {
             return result;
         } else {
-            List<Integer> cellTypes = Arrays.asList(integers);
+            List<CellType> cellTypes = Arrays.asList(cellTypeArr);
 
             // 如果類型不在指定範圍內,並且沒有默認值
-            if (!(cellTypes.contains(cell.getCellType()))
+            if (!(cellTypes.contains(cell.getCellTypeEnum()))
                     || StringUtils.isNotBlank(annoCell.defaultValue())
-                    && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                    && cell.getCellTypeEnum() == CellType.STRING) {
                 StringBuilder strType = new StringBuilder();
                 for (int i = 0; i < cellTypes.size(); i++) {
-                    Integer intType = cellTypes.get(i);
-                    strType.append(getCellTypeByInt(intType));
+                    CellType cellType = cellTypes.get(i);
+                    strType.append(getCellTypeByInt(cellType));
                     if (i != cellTypes.size() - 1) {
                         strType.append(",");
                     }
@@ -611,7 +563,7 @@ public class ExcelUtil {
             } else {
                 // 类型符合验证,但值不在要求范围内的
                 // String in
-                if (annoCell.valid().in().length != 0 && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                if (annoCell.valid().in().length != 0 && cell.getCellTypeEnum() == CellType.STRING) {
                     String[] in = annoCell.valid().in();
                     String cellValue = cell.getStringCellValue();
                     boolean isIn = false;
@@ -625,7 +577,7 @@ public class ExcelUtil {
                     }
                 }
                 // 数字型
-                if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                if (cell.getCellTypeEnum() == CellType.NUMERIC) {
                     double cellValue = cell.getNumericCellValue();
                     // 小于
                     if (!Double.isNaN(annoCell.valid().lt())) {

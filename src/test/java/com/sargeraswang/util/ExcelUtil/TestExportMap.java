@@ -24,7 +24,7 @@ public class TestExportMap {
     map.put("birthday","");
     map.put("sex","");
     Map<String,Object> map2 =new LinkedHashMap<String, Object>();
-    map2.put("name", null);
+    map2.put("name", "测试是否是中文长度不能自动宽度.测试是否是中文长度不能自动宽度.");
     map2.put("age", null);
     map2.put("sex", null);
     map.put("birthday",null);
@@ -41,7 +41,7 @@ public class TestExportMap {
     map1.put("age","年龄");
     map1.put("birthday","出生日期");
     map1.put("sex","性别");
-    File f= new File("c:/test.xls");
+    File f= new File("/tmp/test.xls");
     OutputStream out = new FileOutputStream(f);
     ExcelUtil.exportExcel(map1,list, out );
     out.close();
