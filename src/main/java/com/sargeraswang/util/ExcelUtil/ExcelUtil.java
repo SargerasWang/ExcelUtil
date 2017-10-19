@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.slf4j.Logger;
@@ -100,10 +101,24 @@ public class ExcelUtil {
                 return cell.getBooleanCellValue();
             else if(cellType == CellType.ERROR)
                 return cell.getErrorCellValue();
-            else if(cellType == CellType.FORMULA)
-                return cell.getNumericCellValue();
-            else if(cellType == CellType.NUMERIC)
-                return cell.getNumericCellValue();
+            else if(cellType == CellType.FORMULA) {
+                try {
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        return cell.getDateCellValue();
+                    } else {
+                        return cell.getNumericCellValue();
+                    }
+                } catch (IllegalStateException e) {
+                    return cell.getRichStringCellValue();
+                }
+            }
+            else if(cellType == CellType.NUMERIC){
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue();
+                } else {
+                    return cell.getNumericCellValue();
+                }
+            }
             else if(cellType == CellType.STRING)
                 return cell.getStringCellValue();
             else
