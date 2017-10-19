@@ -24,64 +24,64 @@ public @interface ExcelCell {
      * 
      * @return
      */
-    public int index();
+    int index();
 
     /**
      * 当值为null时要显示的值 default StringUtils.EMPTY
      * 
      * @return
      */
-    public String defaultValue() default StringUtils.EMPTY;
+    String defaultValue() default StringUtils.EMPTY;
 
     /**
      * 用于验证
      * 
      * @return
      */
-    public Valid valid() default @Valid();
+    Valid valid() default @Valid();
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface Valid {
+    @interface Valid {
         /**
          * 必须与in中String相符,目前仅支持String类型
          * 
          * @return e.g. {"abc","123"}
          */
-        public String[] in() default {};
+        String[] in() default {};
 
         /**
          * 是否允许为空,用于验证数据 default true
          * 
          * @return
          */
-        public boolean allowNull() default true;
+        boolean allowNull() default true;
 
         /**
          * Apply a "greater than" constraint to the named property , equivalent ">"
          * 
          * @return
          */
-        public double gt() default Double.NaN;
+        double gt() default Double.NaN;
 
         /**
          * Apply a "less than" constraint to the named property , equivalent "<"
          * @return
          */
-        public double lt() default Double.NaN;
+        double lt() default Double.NaN;
 
         /**
          * Apply a "greater than or equal" constraint to the named property , equivalent ">="
          * 
          * @return
          */
-        public double ge() default Double.NaN;
+        double ge() default Double.NaN;
 
         /**
          * Apply a "less than or equal" constraint to the named property , equivalent "<="
          * 
          * @return
          */
-        public double le() default Double.NaN;
+        double le() default Double.NaN;
     }
 }

@@ -46,7 +46,7 @@ public class ExcelLogs {
     }
 
     public List<ExcelLog> getErrorLogList() {
-        List<ExcelLog> errList = new ArrayList<ExcelLog>();
+        List<ExcelLog> errList = new ArrayList<>();
         for (ExcelLog log : this.logList) {
             if (log != null && StringUtils.isNotBlank(log.getLog())) {
                 errList.add(log);
