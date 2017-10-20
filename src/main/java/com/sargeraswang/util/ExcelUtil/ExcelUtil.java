@@ -402,11 +402,11 @@ public class ExcelUtil {
         } catch (IOException e) {
             LG.error(e.toString(), e);
         }
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         HSSFSheet sheet = workBook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.rowIterator();
         try {
-            List<ExcelLog> logList = new ArrayList<ExcelLog>();
+            List<ExcelLog> logList = new ArrayList<>();
             // Map<title,index>
             Map<String, Integer> titleMap = new HashMap<>();
 
@@ -439,19 +439,25 @@ public class ExcelUtil {
                     LG.warn("Excel row " + row.getRowNum() + " all row value is null!");
                     continue;
                 }
-                T t = null;
                 StringBuilder log = new StringBuilder();
                 if (clazz == Map.class) {
-                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
                     for (String k : titleMap.keySet()) {
                         Integer index = titleMap.get(k);
-                        String value = row.getCell(index).getStringCellValue();
-                        map.put(k, value);
+                        Cell cell = row.getCell(index);
+                        // 判空
+                        if (cell == null) {
+                            map.put(k, null);
+                        } else {
+                            cell.setCellType(CellType.STRING);
+                            String value = cell.getStringCellValue();
+                            map.put(k, value);
+                        }
                     }
                     list.add((T) map);
 
                 } else {
-                    t = clazz.newInstance();
+                    T t = clazz.newInstance();
                     int arrayIndex = 0;// 标识当前第几个数组了
                     int cellIndex = 0;// 标识当前读到这一行的第几个cell了
                     List<FieldForSortting> fields = sortFieldByAnno(clazz);
@@ -460,7 +466,7 @@ public class ExcelUtil {
                         field.setAccessible(true);
                         if (field.getType().isArray()) {
                             Integer count = arrayCount[arrayIndex];
-                            Object[] value = null;
+                            Object[] value;
                             if (field.getType().equals(String[].class)) {
                                 value = new String[count];
                             } else {
@@ -640,8 +646,8 @@ public class ExcelUtil {
      */
     private static List<FieldForSortting> sortFieldByAnno(Class<?> clazz) {
         Field[] fieldsArr = clazz.getDeclaredFields();
-        List<FieldForSortting> fields = new ArrayList<FieldForSortting>();
-        List<FieldForSortting> annoNullFields = new ArrayList<FieldForSortting>();
+        List<FieldForSortting> fields = new ArrayList<>();
+        List<FieldForSortting> annoNullFields = new ArrayList<>();
         for (Field field : fieldsArr) {
             ExcelCell ec = field.getAnnotation(ExcelCell.class);
             if (ec == null) {
