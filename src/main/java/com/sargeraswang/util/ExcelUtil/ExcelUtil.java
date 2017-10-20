@@ -393,7 +393,6 @@ public class ExcelUtil {
      * @return voList
      * @throws RuntimeException
      */
-    @SuppressWarnings("unchecked")
     public static <T> Collection<T> importExcel(Class<T> clazz, InputStream inputStream,
                                                 String pattern, ExcelLogs logs, Integer... arrayCount) {
         HSSFWorkbook workBook = null;
@@ -662,7 +661,6 @@ public class ExcelUtil {
         return fields;
     }
 
-    @SuppressWarnings("unchecked")
     private static void sortByProperties(List<? extends Object> list, boolean isNullHigh,
                                          boolean isReversed, String... props) {
         if (CollectionUtils.isNotEmpty(list)) {
