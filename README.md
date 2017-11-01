@@ -6,6 +6,6 @@ Apache Maven
 <dependency>
     <groupId>com.sargeraswang.util</groupId>
     <artifactId>excel-util</artifactId>
-    <version>1.2</version>
+    <version>1.2.1</version>
 </dependency>
 ```
