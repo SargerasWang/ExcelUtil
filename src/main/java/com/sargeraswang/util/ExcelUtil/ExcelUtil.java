@@ -7,10 +7,7 @@ import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,14 +392,15 @@ public class ExcelUtil {
      */
     public static <T> Collection<T> importExcel(Class<T> clazz, InputStream inputStream,
                                                 String pattern, ExcelLogs logs, Integer... arrayCount) {
-        HSSFWorkbook workBook = null;
+        Workbook workBook;
         try {
-            workBook = new HSSFWorkbook(inputStream);
-        } catch (IOException e) {
-            LG.error(e.toString(), e);
+            workBook = WorkbookFactory.create(inputStream);
+        } catch (Exception e) {
+            LG.error("load excel file error",e);
+            return null;
         }
         List<T> list = new ArrayList<>();
-        HSSFSheet sheet = workBook.getSheetAt(0);
+        Sheet sheet = workBook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.rowIterator();
         try {
             List<ExcelLog> logList = new ArrayList<>();

@@ -3,6 +3,8 @@
  */
 package com.sargeraswang.util.ExcelUtil;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,7 +18,8 @@ import java.util.*;
  * Created at 2014年9月21日 下午4:38:42
  */
 public class TestExportMap {
-  public static void main(String[] args) throws IOException {
+  @Test
+  public void exportXls() throws IOException {
     List<Map<String,Object>> list = new ArrayList<>();
     Map<String,Object> map =new LinkedHashMap<>();
     map.put("name", "");
@@ -41,7 +44,7 @@ public class TestExportMap {
     map1.put("age","年龄");
     map1.put("birthday","出生日期");
     map1.put("sex","性别");
-    File f= new File("/tmp/test.xls");
+    File f= new File("test.xls");
     OutputStream out = new FileOutputStream(f);
     ExcelUtil.exportExcel(map1,list, out );
     out.close();
