@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.CellType;
 
 /**
  * The <code>ExcelCell</code><br>
@@ -38,6 +39,13 @@ public @interface ExcelCell {
      * @return valid
      */
     Valid valid() default @Valid();
+
+    /**
+     * 单元格类型
+     * @return
+     */
+    CellType cellType() default CellType._NONE;
+
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
