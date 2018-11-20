@@ -461,6 +461,11 @@ public class ExcelUtil {
                     for (FieldForSortting ffs : fields) {
                         Field field = ffs.getField();
                         field.setAccessible(true);
+
+                        // 获取注解上列类型
+                        ExcelCell annoCell = field.getAnnotation(ExcelCell.class);
+                        CellType cellType = annoCell.cellType();
+
                         if (field.getType().isArray()) {
                             Integer count = arrayCount[arrayIndex];
                             Object[] value;
@@ -472,6 +477,11 @@ public class ExcelUtil {
                             }
                             for (int i = 0; i < count; i++) {
                                 Cell cell = row.getCell(cellIndex);
+                                // 设置单元格格式
+                                if(cellType != CellType._NONE){
+                                    cell.setCellType(cellType);
+                                }
+
                                 String errMsg = validateCell(cell, field, cellIndex);
                                 if (StringUtils.isBlank(errMsg)) {
                                     value[i] = getCellValue(cell);
@@ -486,6 +496,11 @@ public class ExcelUtil {
                             arrayIndex++;
                         } else {
                             Cell cell = row.getCell(cellIndex);
+                            // 设置单元格格式
+                            if(cellType != CellType._NONE){
+                                cell.setCellType(cellType);
+                            }
+
                             String errMsg = validateCell(cell, field, cellIndex);
                             if (StringUtils.isBlank(errMsg)) {
                                 Object value = null;
@@ -504,7 +519,6 @@ public class ExcelUtil {
                                 } else {
                                     value = getCellValue(cell);
                                     // 处理特殊情况,excel的value为String,且bean中为其他,且defaultValue不为空,那就=defaultValue
-                                    ExcelCell annoCell = field.getAnnotation(ExcelCell.class);
                                     if (value instanceof String && !field.getType().equals(String.class)
                                             && StringUtils.isNotBlank(annoCell.defaultValue())) {
                                         value = annoCell.defaultValue();
