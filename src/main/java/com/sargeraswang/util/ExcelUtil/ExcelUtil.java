@@ -5,7 +5,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
@@ -87,7 +86,7 @@ public class ExcelUtil {
      */
     private static Object getCellValue(Cell cell) {
         if (cell == null
-                || (cell.getCellTypeEnum() == CellType.STRING && StringUtils.isBlank(cell
+                || (cell.getCellTypeEnum() == CellType.STRING && isBlank(cell
                 .getStringCellValue()))) {
             return null;
         }
@@ -162,7 +161,7 @@ public class ExcelUtil {
         }
     }
 
-    public static void exportExcel(String[][] datalist, OutputStream out) {
+    public static void exportExcel(String[][] datalist, OutputStream out,boolean autoColumnWidth) {
         try {
             // 声明一个工作薄
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -175,7 +174,7 @@ public class ExcelUtil {
                 for (int j = 0; j < r.length; j++) {
                     HSSFCell cell = row.createCell(j);
                     //cell max length 32767
-                    if (r[j].length() > 32767) {
+                    if (r[j] != null && r[j].length() > 32767) {
                         r[j] = "--此字段过长(超过32767),已被截断--" + r[j];
                         r[j] = r[j].substring(0, 32766);
                     }
@@ -183,16 +182,21 @@ public class ExcelUtil {
                 }
             }
             //自动列宽
-            if (datalist.length > 0) {
-                int colcount = datalist[0].length;
-                for (int i = 0; i < colcount; i++) {
-                    sheet.autoSizeColumn(i);
+            if(autoColumnWidth) {
+                if (datalist.length > 0) {
+                    int colcount = datalist[0].length;
+                    for (int i = 0; i < colcount; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
                 }
             }
             workbook.write(out);
         } catch (IOException e) {
             LG.error(e.toString(), e);
         }
+    }
+    public static void exportExcel(String[][] datalist, OutputStream out) {
+        exportExcel(datalist,out,true);
     }
 
     /**
@@ -245,7 +249,7 @@ public class ExcelUtil {
     private static <T> void write2Sheet(HSSFSheet sheet, Map<String,String> headers, Collection<T> dataset,
                                         String pattern) {
         //时间格式默认"yyyy-MM-dd"
-        if (StringUtils.isEmpty(pattern)){
+        if (isBlank(pattern)){
             pattern = "yyyy-MM-dd";
         }
         // 产生表格标题行
@@ -363,7 +367,7 @@ public class ExcelUtil {
             }
         } else {
             // 其它数据类型都当作字符串简单处理
-            String empty = StringUtils.EMPTY;
+            String empty = "";
             if(field != null) {
                 ExcelCell anno = field.getAnnotation(ExcelCell.class);
                 if (anno != null) {
@@ -473,7 +477,7 @@ public class ExcelUtil {
                             for (int i = 0; i < count; i++) {
                                 Cell cell = row.getCell(cellIndex);
                                 String errMsg = validateCell(cell, field, cellIndex);
-                                if (StringUtils.isBlank(errMsg)) {
+                                if (isBlank(errMsg)) {
                                     value[i] = getCellValue(cell);
                                 } else {
                                     log.append(errMsg);
@@ -487,7 +491,7 @@ public class ExcelUtil {
                         } else {
                             Cell cell = row.getCell(cellIndex);
                             String errMsg = validateCell(cell, field, cellIndex);
-                            if (StringUtils.isBlank(errMsg)) {
+                            if (isBlank(errMsg)) {
                                 Object value = null;
                                 // 处理特殊情况,Excel中的String,转换成Bean的Date
                                 if (field.getType().equals(Date.class)
@@ -506,13 +510,13 @@ public class ExcelUtil {
                                     // 处理特殊情况,excel的value为String,且bean中为其他,且defaultValue不为空,那就=defaultValue
                                     ExcelCell annoCell = field.getAnnotation(ExcelCell.class);
                                     if (value instanceof String && !field.getType().equals(String.class)
-                                            && StringUtils.isNotBlank(annoCell.defaultValue())) {
+                                            && isNotBlank(annoCell.defaultValue())) {
                                         value = annoCell.defaultValue();
                                     }
                                 }
                                 field.set(t, value);
                             }
-                            if (StringUtils.isNotBlank(errMsg)) {
+                            if (isNotBlank(errMsg)) {
                                 log.append(errMsg);
                                 log.append(";");
                                 logs.setHasError(true);
@@ -553,7 +557,7 @@ public class ExcelUtil {
         }
         ExcelCell annoCell = field.getAnnotation(ExcelCell.class);
         if (cell == null
-                || (cell.getCellTypeEnum() == CellType.STRING && StringUtils.isBlank(cell
+                || (cell.getCellTypeEnum() == CellType.STRING && isBlank(cell
                 .getStringCellValue()))) {
             if (annoCell != null && annoCell.valid().allowNull() == false) {
                 result = MessageFormat.format("the cell [{0}] can not null", columnName);
@@ -566,7 +570,7 @@ public class ExcelUtil {
 
             // 如果類型不在指定範圍內,並且沒有默認值
             if (!(cellTypes.contains(cell.getCellTypeEnum()))
-                    || StringUtils.isNotBlank(annoCell.defaultValue())
+                    || isNotBlank(annoCell.defaultValue())
                     && cell.getCellTypeEnum() == CellType.STRING) {
                 StringBuilder strType = new StringBuilder();
                 for (int i = 0; i < cellTypes.size(); i++) {
@@ -684,6 +688,17 @@ public class ExcelUtil {
                 Collections.sort(list, sortChain);
             }
         }
+    }
+
+    private static boolean isBlank(String str){
+        if(str == null){
+            return true;
+        }
+        return str.length() == 0;
+    }
+
+    protected static boolean isNotBlank(String str){
+        return !isBlank(str);
     }
 
 }

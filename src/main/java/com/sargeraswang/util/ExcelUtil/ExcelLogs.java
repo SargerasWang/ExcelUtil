@@ -3,8 +3,6 @@ package com.sargeraswang.util.ExcelUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * The <code>ExcelLogs</code>
  * 
@@ -48,7 +46,7 @@ public class ExcelLogs {
     public List<ExcelLog> getErrorLogList() {
         List<ExcelLog> errList = new ArrayList<>();
         for (ExcelLog log : this.logList) {
-            if (log != null && StringUtils.isNotBlank(log.getLog())) {
+            if (log != null && ExcelUtil.isNotBlank(log.getLog())) {
                 errList.add(log);
             }
         }
