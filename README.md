@@ -6,6 +6,7 @@ Apache Maven
 <dependency>
     <groupId>com.sargeraswang.util</groupId>
     <artifactId>excel-util</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.4</version>
 </dependency>
 ```
+使用方式:[https://sargeraswang.com/blog/2018/11/27/excelutil-1-dot-2-1-doc/](https://sargeraswang.com/blog/2018/11/27/excelutil-1-dot-2-1-doc/)
